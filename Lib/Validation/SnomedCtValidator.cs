@@ -34,7 +34,6 @@ public static class SnomedCtValidator
             return false;
         }
 
-
         bool isValid = VerhoeffValidator.IsValidVerhoeff(normalizedCode);
         return isValid;
     }
