@@ -12,21 +12,24 @@ public static class VerhoeffValidator
     /// <returns><see langword="true" /> when the number passes the Verhoeff check.</returns>
     public static bool IsValidVerhoeff(string code)
     {
-        int[] digits = code
-            .Select(character => int.Parse(character.ToString()))
-            .Reverse()
-            .ToArray();
-        int checksum = 0;
-
-        for (int index = 0; index < digits.Length; index++)
-        {
-            checksum = D[checksum, P[index % 8, digits[index]]];
-        }
-
+        int checksum = CalculateChecksum(code);
         return checksum == 0;
+    }  
+
+    /// <summary>
+    /// Generates the Verhoeff digit, which is the check digit to be appended to code
+    /// </summary>
+    /// <param name="code"></param>
+    /// <returns></returns>
+    public static char GenerateVerhoeff(string code)
+    {
+        string normalizedCode = code + "0";
+        int checkSum = CalculateChecksum(normalizedCode);
+        string checkDigit = J[checkSum].ToString();
+        return checkDigit[0];
     }
 
-    private static readonly int[,] D =
+    private static readonly byte[,] D =
     {
         { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
         { 1, 2, 3, 4, 0, 6, 7, 8, 9, 5 },
@@ -40,7 +43,7 @@ public static class VerhoeffValidator
         { 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 }
     };
 
-    private static readonly int[,] P =
+    private static readonly byte[,] P =
     {
         { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
         { 1, 5, 7, 6, 2, 8, 3, 0, 9, 4 },
@@ -51,5 +54,25 @@ public static class VerhoeffValidator
         { 2, 7, 9, 3, 8, 0, 6, 4, 1, 5 },
         { 7, 0, 4, 6, 9, 1, 3, 2, 5, 8 }
     };
+
+    private static readonly int[] J =
+    {
+        0,4,3,2,1,5,6,7,8,9
+    };
+
+    private static byte CalculateChecksum(string code)
+    {
+        byte[] digits = code
+                    .Select(character => byte.Parse(character.ToString()))
+                    .Reverse()
+                    .ToArray();
+        byte checksum = 0;
+
+        for (int index = 0; index < digits.Length; index++)
+        {
+            checksum = D[checksum, P[index % 8, digits[index]]];
+        }
+        return checksum;
+    }
 
 }

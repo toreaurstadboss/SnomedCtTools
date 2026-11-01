@@ -13,10 +13,22 @@ namespace SnomedCtTools.Tests.Validation
         [TestCase("44054006", true, Description = "diabetes type 2")]
         [TestCase("440540006", false, Description = "not a snomed ct code")]
         [TestCase("67148009", true, Description = "Podagra")]
-        [TestCase("671480091", false, Description = "not a snomed ct code")]
+        [TestCase("76148009", false, Description = "not a snomed ct code")]
         public void SnomedCtValidationCheckForWellknownDiseases(string code, bool expected)
         {
             SnomedCtValidator.IsValidSnomedCt(code).Should().Be(expected);
+        }
+
+        [Test]
+        [TestCase("4405400", "44054006", Description = "diabetes type 2")]
+        [TestCase("4405k40006", null, Description = "not a valid snomed ct code")]
+        [TestCase("6714800", "67148009", Description = "Podagra")]
+        [TestCase("-671480091", null, Description = "not a snomed ct code")]
+        [TestCase("5079700", "50797007", Description = "Bubonic plague")]
+        [TestCase("2807200", "28072004", Description = "Cauliflower ear / Blomkåløre")]
+        public void SnomedCtValidationAppendsCorrectCheckDigit(string code, string expected)
+        {
+            SnomedCtValidator.GenerateSnomedCtCode(code).Should().Be(expected);
         }
 
         [Test]
